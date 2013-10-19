@@ -57,3 +57,15 @@ class KiiClient:
             body = json.loads(e.read())
             return (e.code, body)            
 
+    def sendForDownload(self, outFile):
+        req = urllib2.Request(
+            url = self.url,
+            headers = self.headers)
+        req.get_method = lambda : self.method
+        try:
+            resp = urllib2.urlopen(req)
+            outFile.write(resp.read())
+            return (resp.code, '')
+        except urllib2.HTTPError, e:
+            body = json.loads(e.read())
+            return (e.code, body)        

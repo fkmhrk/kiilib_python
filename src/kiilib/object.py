@@ -43,3 +43,16 @@ class ObjectAPI:
         if code == 201:
             return
         raise kii.CloudException(code, body)
+
+    def downloadBody(self, obj, outFile):
+        url = '%s/apps/%s/%s/body' % (self.context.url,
+                                      self.context.app_id,
+                                      obj.getPath())
+        client = self.context.newClient()
+        client.method = "GET"
+        client.url = url
+        client.setKiiHeaders(self.context, True)
+        (code, body) = client.sendForDownload(outFile)
+        if code == 200:
+            return
+        raise kii.CloudException(code, body)
