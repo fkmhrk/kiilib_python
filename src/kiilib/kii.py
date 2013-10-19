@@ -71,7 +71,7 @@ class AppAPI:
             raise CloudException(code, body)
         self.context.access_token = body['access_token']
         id = body['id']
-        print KiiUser(id)
+        return KiiUser(id)
 
     def signup(self, userIdentifier, password):
         url = '%s/apps/%s/users' % (self.context.url, self.context.app_id)
