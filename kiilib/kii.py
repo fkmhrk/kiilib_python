@@ -55,12 +55,8 @@ class AppAPI:
         self.context = context
         self.objectAPI = object.ObjectAPI(context)
     
-    def login(self, userIdentifier, password):
+    def _login(self, body):
         url = '%s/oauth2/token' % self.context.url
-        body = {
-            'username' : userIdentifier,
-            'password' : password
-            }
         client = self.context.newClient()
         client.method = "POST"
         client.url = url
@@ -72,6 +68,22 @@ class AppAPI:
         self.context.access_token = body['access_token']
         id = body['id']
         return KiiUser(id)
+
+    def login(self, userIdentifier, password):
+        return self._login(
+            body = {
+                'username' : userIdentifier,
+                'password' : password
+                }
+        )
+
+    def loginAsAdmin(self, client_id, client_secret):
+        return self._login(
+            body = {
+                'client_id' : client_id,
+                'client_secret' : client_secret
+                }
+        )
 
     def signup(self, userIdentifier, password):
         url = '%s/apps/%s/users' % (self.context.url, self.context.app_id)
