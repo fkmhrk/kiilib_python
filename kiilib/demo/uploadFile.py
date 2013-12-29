@@ -1,7 +1,8 @@
 #!/usr/bin/python
 import sys
 import os
-sys.path.append('../src')
+# Python Tutorial 6.1.2. "The directory containing the script being run is placed at the beginning of the search path, ahead of the standard library path."
+sys.path.append(sys.path[0] + "/../..")
 from kiilib import *
 
 from config import *
@@ -19,7 +20,7 @@ def main():
     print 'object id = %s' % (obj.id)
 
     # upload body
-    filePath = 'image.jpg'
+    filePath = sys.path[0] + '/image.jpg'
     api.objectAPI.updateBody(obj, 'image/jpeg',
                       open(filePath, 'rb'), os.path.getsize(filePath))
     print 'file uploaded'
