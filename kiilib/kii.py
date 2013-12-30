@@ -1,7 +1,7 @@
 import client
-import object
+import kiiobject
 
-class KiiContext:
+class KiiContext(object):
     def __init__(self, app_id, app_key, url):
         self.app_id = app_id
         self.app_key = app_key
@@ -19,21 +19,60 @@ class CloudException(Exception):
     def __str__(self):
         return 'HTTP %d %s' % (self.code, self.body)
 
-class KiiUser:
-    def __init__(self, id):
+class KiiUser(object):
+    """
+    A user in Kii Cloud. This class is immutable.
+    """
+    # 'value-only' fields
+    FIELD_KEYS = ['loginName', 'displayName', 'emailAddress', 'phoneNumber', 'country', 'emailVerified', 'phoneNumberVerified']
+    def __init__(self, id=None, **fields):
         self.id = id
+        self._fields = {k:v for (k,v) in fields.iteritems() if k in self.FIELD_KEYS}
 
     def getPath(self):
+        if self.id == None:
+            raise Exception("tried to generate URL while id is None")
         return 'users/%s' % (self.id)
 
-class KiiGroup:
+    @property
+    def loginName(self):
+        return self._fields['loginName']
+
+    @property
+    def displayName(self):
+        return self._fields['displayName']
+
+    @property
+    def emailAddress(self):
+        return self._fields['emailAddress']
+
+    @property
+    def phoneNumber(self):
+        return self._fields['phoneNumber']
+
+    @property
+    def country(self):
+        return self._fields['country']
+
+    @property
+    def emailVerified(self):
+        return self._fields['emailVerified']
+
+    @property
+    def phoneNumberVerified(self):
+        return self._fields['phoneNumberVerified']
+
+    def __str__(self):
+        return "KiiUser(id:%s, %s)" % (self.id, ', '.join(["%s:%s" % (k, v) for (k, v) in self._fields.iteritems()]))
+
+class KiiGroup(object):
     def __init__(self, id):
         self.id = id
 
     def getPath(self):
         return 'groups/%s' % (self.id)
 
-class KiiBucket:
+class KiiBucket(object):
     def __init__(self, owner, name):
         self.owner = owner
         self.name = name
@@ -41,7 +80,7 @@ class KiiBucket:
     def getPath(self):
         return '%s/buckets/%s' % (self.owner.getPath(), self.name)
         
-class KiiObject:
+class KiiObject(object):
     def __init__(self, bucket, id, data):
         self.bucket = bucket
         self.id = id
@@ -50,10 +89,10 @@ class KiiObject:
     def getPath(self):
         return '%s/objects/%s' % (self.bucket.getPath(), self.id)
         
-class AppAPI:
+class AppAPI(object):
     def __init__(self, context):
         self.context = context
-        self.objectAPI = object.ObjectAPI(context)
+        self.objectAPI = kiiobject.ObjectAPI(context)
     
     def login(self, userIdentifier, password):
         url = '%s/oauth2/token' % self.context.url
@@ -87,6 +126,6 @@ class AppAPI:
         (code, body) = client.send(body)
         if code != 201:
             raise CloudException(code, body)
-        id = body['id']
-        print user.KiiUser(id)        
+        id = body['userID']
+        return KiiUser(id=id, loginName=userIdentifier)
         
