@@ -1,1 +1,1 @@
-__all__ = ["kii", "object"]
+__all__ = ["kii", "kiiobject"]
