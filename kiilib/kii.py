@@ -27,7 +27,7 @@ class KiiUser(object):
     FIELD_KEYS = ['loginName', 'displayName', 'emailAddress', 'phoneNumber', 'country', 'emailVerified', 'phoneNumberVerified']
     def __init__(self, id=None, **fields):
         self.id = id
-        self._fields = {k:v for (k,v) in fields.iteritems() if k in self.FIELD_KEYS}
+        self.data = {k:v for (k,v) in fields.iteritems() if k in self.FIELD_KEYS}
 
     def getPath(self):
         if self.id == None:
@@ -36,34 +36,34 @@ class KiiUser(object):
 
     @property
     def loginName(self):
-        return self._fields['loginName']
+        return self.data['loginName']
 
     @property
     def displayName(self):
-        return self._fields['displayName']
+        return self.data['displayName']
 
     @property
     def emailAddress(self):
-        return self._fields['emailAddress']
+        return self.data['emailAddress']
 
     @property
     def phoneNumber(self):
-        return self._fields['phoneNumber']
+        return self.data['phoneNumber']
 
     @property
     def country(self):
-        return self._fields['country']
+        return self.data['country']
 
     @property
     def emailVerified(self):
-        return self._fields['emailVerified']
+        return self.data['emailVerified']
 
     @property
     def phoneNumberVerified(self):
-        return self._fields['phoneNumberVerified']
+        return self.data['phoneNumberVerified']
 
     def __str__(self):
-        return "KiiUser(id:%s, %s)" % (self.id, ', '.join(["%s:%s" % (k, v) for (k, v) in self._fields.iteritems()]))
+        return "KiiUser(id:%s, %s)" % (self.id, ', '.join(["%s:%s" % (k, v) for (k, v) in self.data.iteritems()]))
 
 class KiiGroup(object):
     def __init__(self, id):
