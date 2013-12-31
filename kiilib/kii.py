@@ -124,12 +124,17 @@ class AppAPI(object):
                 }
         )
 
-    def signup(self, userIdentifier, password):
+    def signup(self, username, password, **extFields):
         url = '%s/apps/%s/users' % (self.context.url, self.context.app_id)
         body = {
-            'loginName' : userIdentifier,
             'password' : password
             }
+        if extFields != None:
+            for k, v in extFields.items():
+                body[k] = v
+        if username != None:
+            body['loginName'] = username
+        
         client = self.context.newClient()
         client.method = "POST"
         client.url = url
@@ -139,5 +144,5 @@ class AppAPI(object):
         if code != 201:
             raise CloudException(code, body)
         id = body['userID']
-        return KiiUser(id=id, loginName=userIdentifier)
+        return KiiUser(id=id, loginName=username)
         
