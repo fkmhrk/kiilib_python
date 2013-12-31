@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import sys
-sys.path.append('../src')
+# Python Tutorial 6.1.2. "The directory containing the script being run is placed at the beginning of the search path, ahead of the standard library path."
+sys.path.append(sys.path[0] + "/../..")
 from kiilib import *
 
 from config import *
