@@ -23,44 +23,17 @@ class KiiUser(object):
     """
     A user in Kii Cloud. This class is immutable.
     """
-    # 'value-only' fields
-    FIELD_KEYS = ['loginName', 'displayName', 'emailAddress', 'phoneNumber', 'country', 'emailVerified', 'phoneNumberVerified']
-    def __init__(self, id=None, **fields):
-        self.id = id
-        self.data = {k:v for (k,v) in fields.iteritems() if k in self.FIELD_KEYS}
+    def __init__(self, userID=None, **fields):
+        self.id = userID
+        self.data = {k:v for (k,v) in fields.iteritems()}
 
     def getPath(self):
         if self.id == None:
             raise Exception("tried to generate URL while id is None")
         return 'users/%s' % (self.id)
 
-    @property
-    def loginName(self):
-        return self.data['loginName']
-
-    @property
-    def displayName(self):
-        return self.data['displayName']
-
-    @property
-    def emailAddress(self):
-        return self.data['emailAddress']
-
-    @property
-    def phoneNumber(self):
-        return self.data['phoneNumber']
-
-    @property
-    def country(self):
-        return self.data['country']
-
-    @property
-    def emailVerified(self):
-        return self.data['emailVerified']
-
-    @property
-    def phoneNumberVerified(self):
-        return self.data['phoneNumberVerified']
+    def __getattr__(self, name):
+        return self.data.get(name)
 
     def __str__(self):
         return "KiiUser(id:%s, %s)" % (self.id, ', '.join(["%s:%s" % (k, v) for (k, v) in self.data.iteritems()]))
@@ -144,5 +117,5 @@ class AppAPI(object):
         if code != 201:
             raise CloudException(code, body)
         id = body['userID']
-        return KiiUser(id=id, loginName=username)
+        return KiiUser(userID=id, loginName=username, **extFields)
         
