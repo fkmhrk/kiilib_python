@@ -10,7 +10,10 @@ def main():
     context = kii.KiiContext(APP_ID, APP_KEY, BASE_URL)
     app_api = kii.AppAPI(context)
 
-    user = app_api.signup('fkmtest', 'password1234')
+    data = {
+        'age' : 29
+        }
+    user = app_api.signup('fkmtest', 'password1234', **data)
     print 'user = %s' % user
 
 if __name__ == '__main__':
