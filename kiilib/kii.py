@@ -1,5 +1,6 @@
 import client
 import kiiobject
+import bucket
 
 class KiiContext(object):
     def __init__(self, app_id, app_key, url):
@@ -80,19 +81,11 @@ class KiiBucket(object):
     def getPath(self):
         return '%s/buckets/%s' % (self.owner.getPath(), self.name)
         
-class KiiObject(object):
-    def __init__(self, bucket, id, data):
-        self.bucket = bucket
-        self.id = id
-        self.data = data
-
-    def getPath(self):
-        return '%s/objects/%s' % (self.bucket.getPath(), self.id)
-        
 class AppAPI(object):
     def __init__(self, context):
         self.context = context
         self.objectAPI = kiiobject.ObjectAPI(context)
+        self.bucketAPI = bucket.BucketAPI(context)
     
     def _login(self, body):
         url = '%s/oauth2/token' % self.context.url

@@ -8,6 +8,9 @@ class KiiObject:
 
     def getPath(self):
         return '%s/objects/%s' % (self.bucket.getPath(), self.id)
+
+    def __str__(self):
+        return "KiiObject(%s) " % self.id + str(self.data)
         
 class ObjectAPI:
     def __init__(self, context):
@@ -26,7 +29,7 @@ class ObjectAPI:
         if code != 201:
             raise kii.CloudException(code, body)
         id = body['objectID']
-        return kii.KiiObject(bucket, id, data)
+        return KiiObject(bucket, id, data)
         
     def updateBody(self, obj, type, data, size):
         url = '%s/apps/%s/%s/body' % (self.context.url,
