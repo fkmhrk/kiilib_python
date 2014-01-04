@@ -10,11 +10,9 @@ class BucketAPI(object):
         client = self.context.newClient()
         client.method = "POST"
         client.url = "%s/apps/%s/%s/%s" % (self.context.url, self.context.app_id, bucket.getPath(), "query")
-        print client.url
         client.setContentType('application/vnd.kii.QueryRequest+json')
         client.setKiiHeaders(self.context, True)
         (code, body) = client.send(condition)
-        print body
         if code != 200:
             raise kii.CloudException(code, body)
         return [kiiobject.KiiObject(bucket, o["_id"], o) for o in body["results"]]
@@ -32,15 +30,17 @@ class KiiCondition(collections.defaultdict):
     """
     >>> import json
     >>> a = KiiCondition(KiiClause.equals('a', 10))
-    >>> json.dumps(a, sort_keys=True) == json.dumps({'clause':{'type':'eq', 'field':'a', 'value':10}}, sort_keys=True)
+    >>> json.dumps(a, sort_keys=True) == json.dumps({'bucketQuery':{'clause':{'type':'eq', 'field':'a', 'value':10}}}, sort_keys=True)
     True
     """
     def __init__(self, clause, orderBy = None, decending=None, limit=None, pagenationKey=None):
-        self["clause"] = clause
-        if orderBy != None : self["orderBy"] = orderBy
-        if decending != None : self["decending"] = decending
-        if limit != None : self["limit"] = limit
-        if pagenationKey != None : self["pagenationKey"] = pagenationKey
+        bucketQuery = {}
+        bucketQuery["clause"] = clause
+        if orderBy != None : bucketQuery["orderBy"] = orderBy
+        if decending != None : bucketQuery["decending"] = decending
+        if limit != None : bucketQuery["limit"] = limit
+        if pagenationKey != None : bucketQuery["pagenationKey"] = pagenationKey
+        self['bucketQuery'] = bucketQuery
 
 class KiiClause(collections.defaultdict):
     def __init__(self, type, **data):
