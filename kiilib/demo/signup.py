@@ -2,13 +2,13 @@
 import sys
 # Python Tutorial 6.1.2. "The directory containing the script being run is placed at the beginning of the search path, ahead of the standard library path."
 sys.path.append(sys.path[0] + "/../..")
-from kiilib import *
+import kiilib
 
 from config import *
 
 def main():
-    context = kii.KiiContext(APP_ID, APP_KEY, BASE_URL)
-    app_api = kii.AppAPI(context)
+    context = kiilib.KiiContext(APP_ID, APP_KEY, BASE_URL)
+    app_api = kiilib.AppAPI(context)
 
     data = {
         'age' : 29

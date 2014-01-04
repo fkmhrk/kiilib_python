@@ -1,1 +1,4 @@
-__all__ = ["kii", "kiiobject"]
+# import "public" sub-modules
+from kii import *
+from kiiobject import *
+from bucket import *
