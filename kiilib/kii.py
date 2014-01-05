@@ -31,7 +31,7 @@ class KiiUser(object):
     def getPath(self):
         if self.id == None:
             raise Exception("tried to generate URL while id is None")
-        return 'users/%s' % (self.id)
+        return '/users/%s' % (self.id)
 
     def __getattr__(self, name):
         return self.data.get(name)
