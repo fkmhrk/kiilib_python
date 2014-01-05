@@ -47,7 +47,7 @@ class ObjectAPI:
         return KiiObject(bucket, id, body)
         
     def update(self, obj):
-        url = '%s/apps/%s/%s' % (self.context.url,
+        url = '%s/apps/%s%s' % (self.context.url,
                                  self.context.app_id,
                                  obj.getPath())
         client = self.context.newClient()
@@ -63,7 +63,7 @@ class ObjectAPI:
         raise kii.CloudException(code, body)
 
     def updatePatch(self, obj, patch):
-        url = '%s/apps/%s/%s' % (self.context.url,
+        url = '%s/apps/%s%s' % (self.context.url,
                                  self.context.app_id,
                                  obj.getPath())
         client = self.context.newClient()
@@ -81,7 +81,7 @@ class ObjectAPI:
         return obj
         
     def updateBody(self, obj, type, data, size):
-        url = '%s/apps/%s/%s/body' % (self.context.url,
+        url = '%s/apps/%s%s/body' % (self.context.url,
                                       self.context.app_id,
                                       obj.getPath())
         client = self.context.newClient()
@@ -97,7 +97,7 @@ class ObjectAPI:
         raise kii.CloudException(code, body)
 
     def downloadBody(self, obj, outFile):
-        url = '%s/apps/%s/%s/body' % (self.context.url,
+        url = '%s/apps/%s%s/body' % (self.context.url,
                                       self.context.app_id,
                                       obj.getPath())
         client = self.context.newClient()
