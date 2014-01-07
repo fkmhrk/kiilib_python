@@ -8,6 +8,7 @@ class KiiContext(object):
         self.app_key = app_key
         self.url = url
         self.factory = client.KiiClientFactory()
+        self.access_token = None
 
     def newClient(self):
         return self.factory.newClient()
@@ -17,8 +18,29 @@ class CloudException(Exception):
         self.code = code
         self.body = body
 
-    def __str__(self):
+    def __repr__(self):
         return 'HTTP %d %s' % (self.code, self.body)
+    __str__ = __repr__
+
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+class KiiApp(object):
+    """
+    >>> # just a singleton check =)
+    >>> KiiApp().__repr__() == KiiApp().__repr__()
+    True
+    """
+    __metaclass__ = Singleton
+    def getPath(self):
+        return ""
+    def __repr__(self):
+        return "app-scope"
+APP_SCOPE = KiiApp()
 
 class KiiUser(object):
     """
@@ -36,7 +58,7 @@ class KiiUser(object):
     def __getattr__(self, name):
         return self.data.get(name)
 
-    def __str__(self):
+    def __repr__(self):
         return "KiiUser(id:%s, %s)" % (self.id, ', '.join(["%s:%s" % (k, v) for (k, v) in self.data.iteritems()]))
 
 class KiiGroup(object):
@@ -46,14 +68,6 @@ class KiiGroup(object):
     def getPath(self):
         return 'groups/%s' % (self.id)
 
-class KiiBucket(object):
-    def __init__(self, owner, name):
-        self.owner = owner
-        self.name = name
-
-    def getPath(self):
-        return '%s/buckets/%s' % (self.owner.getPath(), self.name)
-        
 class AppAPI(object):
     def __init__(self, context):
         self.context = context
@@ -111,4 +125,9 @@ class AppAPI(object):
             raise CloudException(code, body)
         id = body['userID']
         return KiiUser(userID=id, loginName=username, **extFields)
-        
+
+def doctest():
+    import doctest
+    import json
+    doctest.testmod()
+

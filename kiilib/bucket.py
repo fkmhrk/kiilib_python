@@ -23,7 +23,13 @@ class KiiBucket(object):
         self.name = name
 
     def getPath(self):
+        # :(
+        if self.owner == kii.APP_SCOPE:
+            return "buckets/%s" % self.name
         return '%s/buckets/%s' % (self.owner.getPath(), self.name)
+
+    def __repr__(self):
+        return "KiiBucket(%s, %s) " % (self.owner, self.name)
 
 
 class KiiCondition(collections.defaultdict):
