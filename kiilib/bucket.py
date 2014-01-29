@@ -15,7 +15,7 @@ class BucketAPI(object):
         (code, body) = client.send(condition)
         if code != 200:
             raise kii.CloudException(code, body)
-        return [kiiobject.KiiObject(bucket, o["_id"], o) for o in body["results"]]
+        return [kiiobject.KiiObject(bucket, o["_id"], **o) for o in body["results"]]
 
 class KiiBucket(object):
     def __init__(self, owner, name):
