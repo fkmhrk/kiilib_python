@@ -15,7 +15,7 @@ class BucketAPI(object):
         (code, body) = client.send(condition)
         if code != 200:
             raise kii.CloudException(code, body)
-        return [kiiobject.KiiObject(bucket, o["_id"], o) for o in body["results"]]
+        return [kiiobject.KiiObject(bucket, o["_id"], **o) for o in body["results"]]
 
 class KiiBucket(object):
     def __init__(self, owner, name):
@@ -23,7 +23,13 @@ class KiiBucket(object):
         self.name = name
 
     def getPath(self):
+        # :(
+        if self.owner == kii.APP_SCOPE:
+            return "buckets/%s" % self.name
         return '%s/buckets/%s' % (self.owner.getPath(), self.name)
+
+    def __repr__(self):
+        return "KiiBucket(%s, %s) " % (self.owner, self.name)
 
 
 class KiiCondition(collections.defaultdict):
