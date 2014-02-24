@@ -1,4 +1,4 @@
-from distutils.core import setup
+from setuptools import setup
 
 setup(
     name='kiilib',
@@ -6,4 +6,5 @@ setup(
     packages=['kiilib','kiilib/demo'],
     license='Apache 2.0',
     long_description=open('README.rst').read(),
+    setup_requires=['nose>=1.0'],
 )
