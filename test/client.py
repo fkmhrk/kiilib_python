@@ -2,27 +2,33 @@ import json
 import mimetypes
 import StringIO
 
-class MockClientFactory:
+class MockClientFactory(object):
     def __init__(self):
         self.client = MockClient()
         
     def newClient(self):
         return self.client
 
-class MockResponse:
+class MockRequest(object):
+    def __init__(self):
+        self.content_type = None
+        
+class MockResponse(object):
     def __init__(self, status, headers, body):
         self.status = status
         self.headers = headers
         self.body = body
 
-class MockClient:
+class MockClient(object):
     def __init__(self):
+        self.request = MockRequest()
+        self.requests = []
         self.responses = []
         self.headers = {}
         self.content_type = None
 
     def setContentType(self, value):
-        self.content_type = value
+        self.request.content_type = value
         
     def setKiiHeaders(self, context, auth_required):
         self.headers['x-kii-appid'] = context.app_id
@@ -31,21 +37,33 @@ class MockClient:
             self.headers['authorization'] = 'Bearer %s' % context.access_token
 
     def get(self, url, context, authRequired=True):
+        self.request.method = "GET"
+        self.request.url = url
+        self.requests.append(self.request)
+        self.request = MockRequest()
+        
         response = self.responses.pop(0)
-        #self.url = url
-        #self.setKiiHeaders(context, authRequired)
-        #self.method = "GET"
         return (response.status, json.loads(response.body))
 
     def delete(self, url, context, authRequired=True):
-        self.url = url
-        self.setKiiHeaders(context, authRequired)
-        self.method = "DELETE"
-        return self._sendOnly()
+        self.request.method = "DELETE"
+        self.request.url = url
+        self.requests.append(self.request)
+        self.request = MockRequest()
+        
+        response = self.responses.pop(0)
+        if response.body == '':
+            return (response.status, {})
+        return (response.status, json.loads(response.body))
         
     def send(self, data = None):
-        (code, body) = self._sendOnly(data)
-        return (code, json.loads(body))
+        self.request.url = self.url
+        self.request.method = self.method
+        self.requests.append(self.request)
+        self.request = MockRequest()
+        
+        response = self.responses.pop(0)
+        return (response.status, json.loads(response.body))
 
     def _sendOnly(self, data = None):
         req = urllib2.Request(
