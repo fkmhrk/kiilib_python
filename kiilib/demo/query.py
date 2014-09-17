@@ -16,9 +16,14 @@ def main():
 
     # create object
     bucket = kiilib.KiiBucket(user, 'images')
-    objs = api.bucketAPI.query(bucket, kiilib.KiiCondition(kiilib.KiiClause.all()))
-    for o in objs:
-        print str(o)
+    condition = kiilib.KiiCondition(clause = kiilib.KiiClause.all(),
+                                    limit = 1)
+    while True:
+        objs = api.bucketAPI.query(bucket, condition)
+        for o in objs:
+            print str(o)
+        if condition.hasNext() == False:
+            break
 
 if __name__ == '__main__':
     main()
