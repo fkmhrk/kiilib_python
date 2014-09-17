@@ -15,6 +15,8 @@ class BucketAPI(object):
         (code, body) = client.send(condition)
         if code != 200:
             raise kii.CloudException(code, body)
+        nextKey = body.get("nextPaginationKey")
+        condition.setPaginationKey(nextKey)
         return [kiiobject.KiiObject(bucket, o["_id"], **o) for o in body["results"]]
 
 class KiiBucket(object):
@@ -39,14 +41,20 @@ class KiiCondition(collections.defaultdict):
     >>> json.dumps(a, sort_keys=True) == json.dumps({'bucketQuery':{'clause':{'type':'eq', 'field':'a', 'value':10}}}, sort_keys=True)
     True
     """
-    def __init__(self, clause, orderBy = None, decending=None, limit=None, pagenationKey=None):
+    def __init__(self, clause, orderBy = None, decending=None, limit=None, paginationKey=None):
         bucketQuery = {}
         bucketQuery["clause"] = clause
         if orderBy != None : bucketQuery["orderBy"] = orderBy
         if decending != None : bucketQuery["decending"] = decending
-        if limit != None : bucketQuery["limit"] = limit
-        if pagenationKey != None : bucketQuery["pagenationKey"] = pagenationKey
+        if limit != None : self["bestEffortLimit"] = limit
+        if paginationKey != None : self["paginationKey"] = paginationKey
         self['bucketQuery'] = bucketQuery
+    def setPaginationKey(self, key):
+        self['paginationKey'] = key
+
+    def hasNext(self):
+        return self['paginationKey'] != None
+    
 
 class KiiClause(collections.defaultdict):
     def __init__(self, type, **data):
