@@ -1,5 +1,6 @@
 import client
 import kiiobject
+import user
 import bucket
 
 class KiiContext(object):
@@ -42,25 +43,6 @@ class KiiApp(object):
         return "app-scope"
 APP_SCOPE = KiiApp()
 
-class KiiUser(object):
-    """
-    A user in Kii Cloud. This class is immutable.
-    """
-    def __init__(self, userID=None, **fields):
-        self.id = userID
-        self.data = {k:v for (k,v) in fields.iteritems()}
-
-    def getPath(self):
-        if self.id == None:
-            raise Exception("tried to generate URL while id is None")
-        return '/users/%s' % (self.id)
-
-    def __getattr__(self, name):
-        return self.data.get(name)
-
-    def __repr__(self):
-        return "KiiUser(id:%s, %s)" % (self.id, ', '.join(["%s:%s" % (k, v) for (k, v) in self.data.iteritems()]))
-
 class KiiGroup(object):
     def __init__(self, id):
         self.id = id
@@ -71,6 +53,7 @@ class KiiGroup(object):
 class AppAPI(object):
     def __init__(self, context):
         self.context = context
+        self.userAPI = user.UserAPI(context)
         self.objectAPI = kiiobject.ObjectAPI(context)
         self.bucketAPI = bucket.BucketAPI(context)
     
@@ -86,7 +69,7 @@ class AppAPI(object):
             raise CloudException(code, body)
         self.context.access_token = body['access_token']
         id = body['id']
-        return KiiUser(id)
+        return user.KiiUser(id)
 
     def login(self, userIdentifier, password):
         return self._login(
@@ -124,7 +107,7 @@ class AppAPI(object):
         if code != 201:
             raise CloudException(code, body)
         id = body['userID']
-        return KiiUser(userID=id, loginName=username, **extFields)
+        return user.KiiUser(id, loginName=username, **extFields)
 
 def doctest():
     import doctest
