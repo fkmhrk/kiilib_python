@@ -2,6 +2,7 @@ import client
 import kiiobject
 import user
 import bucket
+import server
 
 class KiiContext(object):
     def __init__(self, app_id, app_key, url):
@@ -56,6 +57,7 @@ class AppAPI(object):
         self.userAPI = user.UserAPI(context)
         self.objectAPI = kiiobject.ObjectAPI(context)
         self.bucketAPI = bucket.BucketAPI(context)
+        self.serverAPI = server.ServerAPI(context)
     
     def _login(self, body):
         url = '%s/oauth2/token' % self.context.url
